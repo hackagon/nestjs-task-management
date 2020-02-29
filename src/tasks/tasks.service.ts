@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Task, TaskStatus } from './task.model';
-import { CreateTaskDTO } from './dto/create-task.tdo'
+import { TaskDTO } from './dto/task.tdo'
 import { uuid } from 'uuidv4';
 import * as _ from "lodash";
 
@@ -12,10 +12,10 @@ export class TasksService {
     return this.tasks;
   }
 
-  public createTask(createTaskDTO: CreateTaskDTO): Task {
+  public createTask(taskDTO: TaskDTO): Task {
     const task: Task = {
       id: uuid(),
-      ...createTaskDTO,
+      ...taskDTO,
       status: TaskStatus.OPEN
     };
 
@@ -24,10 +24,38 @@ export class TasksService {
     return task;
   }
 
-
-
   public getTaskById(id: string): Task {
     const task = _.find(this.tasks, { id })
     return task;
+  }
+
+  public deleteTaskById(id: string): Task {
+    const task = _.chain(this.tasks)
+      .remove(task => task.id === id)
+      .first()
+      .value();
+    return task;
+  }
+
+  public updateTaskById(id: string, taskDTO: TaskDTO): Task {
+    const index = _.findIndex(this.tasks, { id })
+
+    this.tasks[index] = {
+      ...this.tasks[index],
+      ...taskDTO
+    }
+
+    return this.tasks[index];
+  }
+
+  public replaceTaskById(id: string, taskDTO: TaskDTO): Task {
+    const index = _.findIndex(this.tasks, { id })
+
+    this.tasks[index] = {
+      ...this.tasks[index],
+      ...taskDTO
+    }
+
+    return this.tasks[index];
   }
 }
