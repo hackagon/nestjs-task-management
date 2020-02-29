@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Task, TaskStatus } from './task.model';
 import { CreateTaskDTO } from './dto/create-task.tdo'
 import { uuid } from 'uuidv4';
+import * as _ from "lodash";
 
 @Injectable()
 export class TasksService {
@@ -20,6 +21,13 @@ export class TasksService {
 
     this.tasks.push(task);
 
+    return task;
+  }
+
+
+
+  public getTaskById(id: string): Task {
+    const task = _.find(this.tasks, { id })
     return task;
   }
 }
