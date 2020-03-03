@@ -1,15 +1,17 @@
-import { Controller, Get, Post, Patch, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Body, Param, Query } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task } from './task.model';
-import { TaskDTO } from './dto/task.tdo';
+import { TaskDTO, FilterTaskDTO } from './dto/task.tdo';
+import * as _ from "lodash";
 
 @Controller('tasks')
 export class TasksController {
   constructor(private tasksService: TasksService) { }
 
   @Get()
-  getTasks(): Array<Task> {
-    return this.tasksService.getTasks();
+  getTasks(@Query() filterTaskDTO: FilterTaskDTO): Array<Task> {
+    if (_.isEmpty(filterTaskDTO)) return this.tasksService.getTasks();
+    return this.tasksService.getTasksByFilter(filterTaskDTO);
   }
 
   @Post()

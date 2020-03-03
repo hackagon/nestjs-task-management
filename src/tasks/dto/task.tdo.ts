@@ -6,3 +6,7 @@ export class TaskDTO {
     status?: TaskStatus
 }
 
+export class FilterTaskDTO {
+    status: TaskStatus;
+    search: string;   
+}
