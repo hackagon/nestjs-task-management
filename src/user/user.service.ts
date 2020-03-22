@@ -1,7 +1,7 @@
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from './user.repository'
 import { InjectRepository } from '@nestjs/typeorm';
-import { CredentialsDTO, UserDTO } from './user.dto'
+import { CredentialDTO, UserDTO } from './user.dto'
 import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
 
@@ -25,5 +25,17 @@ export class UserService {
         await newUser.save();
 
         return newUser;
+    }
+
+    async login(credential: CredentialDTO): Promise<any> {
+        const { username, password } = credential;
+
+        const existUser = await this.userRepository.findOne({ username })
+        if (!existUser) throw new NotFoundException('User not found')
+
+        const isMatched = this.userRepository.comparePassword(password, existUser.password);
+        if (!isMatched) throw new UnauthorizedException("Password is incorrect")
+
+        return { message: "Access grant" }
     }
 }
