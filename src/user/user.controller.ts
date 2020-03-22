@@ -2,7 +2,7 @@ import { Controller, Post, Body, Get, ValidationPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CredentialsDTO } from './user.dto'
 
-@Controller('user')
+@Controller('users')
 export class UserController {
     constructor(private userService: UserService) { }
 
@@ -11,8 +11,8 @@ export class UserController {
         return "hello"
     }
 
-    @Post('/signup')
-    signUp(@Body(ValidationPipe) credentials: CredentialsDTO) {
-        return this.userService.signUp(credentials);
+    @Post('/')
+    createUser(@Body(ValidationPipe) credentials: CredentialsDTO) {
+        return this.userService.createUser(credentials);
     }
 }

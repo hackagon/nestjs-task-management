@@ -4,7 +4,7 @@ import { CredentialsDTO } from './user.dto'
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
-    async signUp(credentials: CredentialsDTO) {
+    async createUser(credentials: CredentialsDTO) {
         const user = new User();
         const { username, password } = credentials
         user.username = username;
