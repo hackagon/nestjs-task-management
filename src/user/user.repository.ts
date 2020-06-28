@@ -3,9 +3,21 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { User } from './user.entity';
 import { CredentialDTO } from './user.dto'
 import * as bcrypt from "bcrypt";
+import { JwtService } from '@nestjs/jwt';
+
+export interface JwtPayload {
+    username: string;
+    fullName: string;
+}
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User>{
+    constructor(
+        private jwtService: JwtService
+    ) {
+        super();
+    }
+
     async createUser(credentials: CredentialDTO) {
         const user = new User();
         const { username, password } = credentials
@@ -21,5 +33,9 @@ export class UserRepository extends Repository<User>{
         } catch (error) {
             throw new InternalServerErrorException("Internal server error")
         }
+    }
+
+    async generateToken(payload: JwtPayload): Promise<string> {
+        return this.jwtService.sign(payload);
     }
 }

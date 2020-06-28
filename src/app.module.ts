@@ -10,5 +10,5 @@ import { UserModule } from './user/user.module';
     TasksModule,
     UserModule
   ],
-})
+}
 export class AppModule { }

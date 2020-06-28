@@ -1,15 +1,18 @@
 import { Injectable, ConflictException, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { UserRepository } from './user.repository'
+import { UserRepository, JwtPayload } from './user.repository'
 import { InjectRepository } from '@nestjs/typeorm';
 import { CredentialDTO, UserDTO } from './user.dto'
 import * as bcrypt from 'bcrypt';
 import { User } from './user.entity';
+import { JwtService } from '@nestjs/jwt';
+import * as _ from 'lodash';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(UserRepository)
-        private userRepository: UserRepository
+        private userRepository: UserRepository,
+        private jwtService: JwtService
     ) { }
 
     async createUser(user: UserDTO): Promise<User> {
@@ -36,6 +39,13 @@ export class UserService {
         const isMatched = this.userRepository.comparePassword(password, existUser.password);
         if (!isMatched) throw new UnauthorizedException("Password is incorrect")
 
-        return { message: "Access grant" }
+        const payload: JwtPayload = _.pick(existUser, ["username", "fullName"]);
+        // const token = await this.userRepository.generateToken(payload)
+        const token = await this.jwtService.sign(payload);
+
+        return {
+            message: "Access grant",
+            token
+        }
     }
 }
